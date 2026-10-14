@@ -1,4 +1,4 @@
-/* GROW — printable / downloadable documents, generated offline from the saved Passport.
+/* EMBRACE Portal — printable / downloadable documents, generated offline from the saved Passport.
    Layouts follow the official EMBRACE forms: Annex A (Application Form), Annex C (Barangay Certificates),
    Annex D (Business Plan template), Sworn Affidavit, and the OLEDIPO Financial Statement template. */
 (function (G) {
@@ -18,9 +18,9 @@
       '<h1>' + esc(title) + '</h1>' + (sub ? '<div class="sub">' + sub + '</div>' : '') + '</div>';
   }
   function footer(p) {
-    return '<div class="doc-foot">Prepared with GROW (Growing Revenue through OLEDIPO\'s Workspace) on ' + today() +
+    return '<div class="doc-foot">Prepared with the EMBRACE Portal (OLEDIPO, Iloilo Province) on ' + today() +
       (p.passportId ? ' · Passport ID ' + esc(p.passportId) : '') +
-      '. Figures are self-reported by the applicant unless marked "Verified by OLEDIPO". This document does not guarantee loan approval and does not replace official evaluation by the EMBRACE Technical Working Group. Professional review of financial statements is recommended.</div>';
+      '. ' + (p.meta && p.meta.aiAssisted ? 'Narrative drafted with AI assistance and reviewed by the applicant. ' : '') + 'Figures are self-reported by the applicant unless marked "Verified by OLEDIPO". This document does not guarantee loan approval and does not replace official evaluation by the EMBRACE Technical Working Group. Professional review of financial statements is recommended.</div>';
   }
   function sign(label, name) {
     return '<div class="sign"><div class="line">' + esc(name || '') + '</div><div>' + esc(label) + '</div></div>';
@@ -308,7 +308,7 @@
     var needs = p.needs.concat(p.needsOther ? [p.needsOther] : []);
     var sug = C.suggestedNeeds(p).filter(function (s) { return needs.indexOf(s) < 0; });
     h += '<h2>Development Needs (identified by the owner)</h2><ul>' + (needs.length ? needs.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') : '<li><em>None recorded.</em></li>') + '</ul>';
-    if (sug.length) h += '<h2>Suggested by GROW (based on gaps in the passport)</h2><ul>' + sug.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
+    if (sug.length) h += '<h2>Suggested by the EMBRACE Portal (based on gaps in the passport)</h2><ul>' + sug.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
     return { title: 'Training Summary', html: h + footer(p) };
   }
 
@@ -325,7 +325,7 @@
       '<div class="signs">' + sign('Affiant', C.fullName(o).toUpperCase()) + '</div>' +
       '<p class="just ind">SUBSCRIBED AND SWORN before me this ' + v('', 16) + ' who exhibited to me his/her competent proof of identity consisting of his/her ID Card ' + v('', 14) + '.</p>' +
       '<p>Doc No. ____<br>Page No. ____<br>Book No. ____<br>Series of ' + new Date().getFullYear() + '</p>';
-    return { title: 'Sworn Affidavit', html: h + '<p class="note">To be notarized. Prefilled by GROW.</p>' };
+    return { title: 'Sworn Affidavit', html: h + '<p class="note">To be notarized. Prefilled by the EMBRACE Portal.</p>' };
   }
 
   function annexC(p) {
@@ -344,7 +344,7 @@
       '<li>That the employees referred above are permanent residents of the Province of Iloilo;</li></ol>' +
       '<p class="ind">Signed this ' + v('', 3) + ' day of ' + v('', 8) + ' 20' + v('', 2) + ' at ' + v('', 12) + ', Iloilo, Philippines.</p>' +
       '<div class="signs">' + sign('Signature over Printed Name of Brgy. Captain', '') + '</div>';
-    return { title: 'Annex C – Barangay Certificates', html: h + '<p class="note">Prefilled by GROW for the Barangay Captain\'s review and signature. The Barangay Captain completes and signs this certificate.</p>' };
+    return { title: 'Annex C – Barangay Certificates', html: h + '<p class="note">Prefilled by the EMBRACE Portal for the Barangay Captain\'s review and signature. The Barangay Captain completes and signs this certificate.</p>' };
   }
 
   function checklistDoc(p) {
@@ -371,7 +371,7 @@
 
   var PRINT_CSS = 'body{font-family:"Times New Roman",Georgia,serif;font-size:11.5pt;color:#000;line-height:1.35}' +
     '.doc-head{text-align:center;margin-bottom:10pt}.doc-head .lgu{font-size:10pt}.doc-head h1{font-size:15pt;margin:8pt 0 2pt;letter-spacing:.5pt}.doc-head .sub{font-size:10pt}.right{text-align:right}' +
-    'h1.c,.c{text-align:center}h1.c{font-size:15pt}h2{font-size:12pt;background:#e8efe9;padding:3pt 6pt;margin:14pt 0 6pt;border-left:4pt solid #14532d}h3{font-size:11pt;margin:10pt 0 4pt}' +
+    'h1.c,.c{text-align:center}h1.c{font-size:15pt}h2{font-size:12pt;background:#e8eef9;padding:3pt 6pt;margin:14pt 0 6pt;border-left:4pt solid #123A8C}h3{font-size:11pt;margin:10pt 0 4pt}' +
     'table{border-collapse:collapse;width:100%;margin:4pt 0}table.grid td,table.grid th,table.form td{border:1px solid #555;padding:3pt 5pt;vertical-align:top}table.grid th{background:#f0f0f0;font-size:10pt}' +
     'table.grid.small td,table.grid.small th{font-size:8pt;padding:2pt 3pt}table.kv th{text-align:left;font-weight:normal;width:42%;padding:2pt 6pt 2pt 0;vertical-align:top}table.kv td{padding:2pt 0;border-bottom:1px dotted #999}' +
     'td.r,th.r{text-align:right;white-space:nowrap}tr.tot td{font-weight:bold;border-top:1.5px solid #000}tr.dbl td{border-bottom:3px double #000}tr.chk td{font-style:italic;color:#555}.neg{color:#b00020}' +

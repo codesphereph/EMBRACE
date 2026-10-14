@@ -1,5 +1,5 @@
 /**
- * GROW / EMBRACE Portal front-end configuration.
+ * EMBRACE Portal front-end configuration.
  *
  * Paste your Google Apps Script Web App URL (ends with /exec) below.
  * Leave it empty to run in OFFLINE-ONLY mode: everything works and is saved
@@ -10,5 +10,5 @@ window.GROW_CONFIG = {
   SPLASH_MS: 2300, // length of the opening animation
   OFFICE: 'Office of the Local Economic Development and Investment Promotion Officer (OLEDIPO)',
   LGU: 'Provincial Government of Iloilo',
-  VERSION: '2.0.0'
+  VERSION: '3.0.0'
 };

@@ -1,4 +1,4 @@
-/* GROW — Growing Revenue through OLEDIPO's Workspace
+/* EMBRACE Portal
    Main UI controller (vanilla JS, no external libraries, works offline). */
 (function (G) {
   'use strict';
@@ -246,7 +246,7 @@
     document.body.innerHTML = `
       <a class="skip" href="#main">Skip to content</a>
       <header class="top">
-        <a class="brand" href="#home" aria-label="GROW home">${LOGO()}<span><b>GROW</b><small>Growing Revenue through OLEDIPO's Workspace</small></span></a>
+        <a class="brand" href="#home" aria-label="EMBRACE Portal home">${LOGO()}<span><b>EMBRACE Portal</b><small>Expanded Micro Business Recovery Assistance during Crisis and Emergency</small></span></a>
         <div class="top-r">
           <span id="syncPill" class="pill" role="status" aria-live="polite"></span>
           <label class="lang">${ic('globe')}<select id="langSel" aria-label="${t('Language')}">${Object.entries(I.LANGS).map(([k, v]) => `<option value="${k}" ${S.settings.lang === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
@@ -287,6 +287,7 @@
     window.scrollTo(0, 0);
     $$('.stepper li.on, .tabs .on, .years .on').forEach((el) => { const p = el.parentElement; p.scrollLeft = el.offsetLeft - p.offsetLeft - 16; });
     if (base === 'programs') loadPrograms();
+    if (base === 'loan' && G.GrowLoans && $('#loanAcct')) G.GrowLoans.after();
     if (base === 'settings' && G.GrowInstall && $('#setInstall')) { localStorage.removeItem && (function () { try { localStorage.removeItem('growInstallLater'); } catch (e) { /* ignore */ } })(); G.GrowInstall.mount($('#setInstall'), 'app'); }
     if (base === 'home' && G.GrowInstall) G.GrowInstall.mount(main, 'app');
   }
@@ -316,13 +317,14 @@
     const empty = !p.owner.firstName && !p.business.name;
     const st = p.review && p.review.status && p.review.status !== 'Draft' ? p.review.status : '';
     return `<section class="hero">
-        <div><h1>${t('Welcome to GROW')}${name ? ', ' + name : ''}!</h1>
+        <div><h1>${t('Welcome to EMBRACE Portal')}${name ? ', ' + name : ''}!</h1>
         <p class="lead">Prepare your business plan, financial statements and EMBRACE loan requirements — step by step, in simple language, ${t('Works even without internet').toLowerCase()}.</p>
         ${p.meta.lastRoute && p.meta.lastRoute !== '#home' ? `<a class="btn big" href="${esc(p.meta.lastRoute)}">${t('Continue where you left off')} ${ic('arrowR')}</a>` : `<a class="btn big" href="#passport/owner">${t('Get started')} ${ic('arrowR')}</a>`}
         ${empty ? `<button class="btn ghost" data-act="loadSample">${t('Load sample business')}</button>` : ''}</div>
         <div class="hero-ring">${ring(ov.pct, 120, t('Readiness'))}<span>${t('Readiness')}</span><small>${t('Days since you started')}: ${days}</small></div>
       </section>
       ${st ? `<div class="status-banner">${ic('send')} Application status: <b>${esc(st)}</b>${p.review.remarks ? ' — ' + esc(p.review.remarks) : ''}</div>` : ''}
+      ${G.GrowLoans ? G.GrowLoans.homeCard() : ''}
       <h2 class="sec">${t('Your progress')}</h2>
       <div class="cards">${cards.map(([h, i, l, pct, d]) => `<a class="card mod" href="${h}">${ic(i, 'big')}<div><h3>${t(l)}</h3><p>${d}</p></div>${ring(pct, 56, t(l))}</a>`).join('')}</div>
       <div class="grid2">
@@ -345,7 +347,7 @@
   function vPassport(sub) {
     sub = sub || 'owner';
     const p = S.profile;
-    const head = `<div class="page-head"><div><h1>${t('MSME Enterprise Passport')}</h1><p class="muted">${p.passportId ? 'Passport ID <b>' + esc(p.passportId) + '</b> · ' : ''}Fill in once — GROW reuses this in every form.</p></div>
+    const head = `<div class="page-head"><div><h1>${t('MSME Enterprise Passport')}</h1><p class="muted">${p.passportId ? 'Passport ID <b>' + esc(p.passportId) + '</b> · ' : ''}Fill in once — the portal reuses this in every form.</p></div>
       <button class="btn ghost" data-act="doc" data-doc="passport">${ic('eye')} ${t('Preview')}</button></div>` + tabs('#passport', PTABS, sub);
     const body = { owner: pOwner, business: pBusiness, financial: pFinancial, trainings: pTrainings, documents: pDocuments, needs: pNeeds }[sub] || pOwner;
     const idx = PTABS.findIndex((x) => x[0] === sub);
@@ -429,14 +431,14 @@
   function pDocuments() {
     const p = S.profile;
     return `<h2>${t('Documents')}</h2>
-      <p class="help">Take a clear photo or choose a PDF of your permits, certificates and records. Files are stored securely on this device and uploaded to OLEDIPO only when you link an online account.${speakBtn('Take a clear photo or choose a PDF of your permits, certificates and records.')}</p>
+      <p class="help">Take a clear photo or choose a PDF of your permits, certificates and records. Files are stored securely on this device and, when you are online with an account, saved in OLEDIPO's Google Drive. AI can then check each one for completeness.${speakBtn('Take a clear photo or choose a PDF of your permits, certificates and records.')}</p>
       <div class="upload-box"><label for="upCat">Document type</label><select id="upCat">${C.DOC_CATEGORIES.map((c) => `<option>${esc(c)}</option>`).join('')}</select>
         <label class="btn big file-btn">${ic('cam')} ${t('Take photo / choose file')}<input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx" data-upload="#upCat" hidden></label>
         <small class="muted">PDF, photo, Word or Excel · up to 5 MB. Photos are resized to save space.</small></div>
       <ul class="doclist">${p.documents.map((d) => `<li><div><b>${esc(d.category)}</b><span>${esc(d.name)} · ${(d.size / 1024).toFixed(0)} KB · ${C.fmtDate(d.addedAt)}</span></div>
         ${verBadge(d.id)} ${d.driveId ? `<span class="badge">${ic('cloud')} uploaded</span>` : ''}
         <button class="icon-btn" data-act="viewFile" data-id="${d.id}" aria-label="View">${ic('eye')}</button>
-        <button class="icon-btn danger" data-act="delDoc" data-id="${d.id}" aria-label="${t('Remove')}">${ic('trash')}</button></li>`).join('') || '<li class="muted">No documents yet.</li>'}</ul>`;
+        <button class="icon-btn danger" data-act="delDoc" data-id="${d.id}" aria-label="${t('Remove')}">${ic('trash')}</button>${G.GrowAI ? G.GrowAI.docBlock(d) : ''}</li>`).join('') || '<li class="muted">No documents yet.</li>'}</ul>`;
   }
   function pNeeds() {
     const sug = C.suggestedNeeds(S.profile);
@@ -505,7 +507,7 @@
   }
   function s5() {
     const prods = S.profile.plan.products;
-    return `<p class="help">For each product, enter the costs for ONE production batch (or one purchase for trading). GROW computes the cost per unit and your mark-up.${speakBtn('For each product, enter the costs for one production batch. GROW computes the cost per unit and your mark-up.')}</p>` +
+    return `<p class="help">For each product, enter the costs for ONE production batch (or one purchase for trading). The app computes the cost per unit and your mark-up.${speakBtn('For each product, enter the costs for one production batch. The app computes the cost per unit and your mark-up.')}</p>` +
       (prods.length ? prods.map((pr, i) => `<div class="sub-card"><div class="sub-head"><b>${esc(pr.name || 'Product ' + (i + 1))}</b><span class="muted">${t('Selling price')}: ${pr.price ? peso(n(pr.price)) : '—'}</span></div>
         ${row(field({ path: `plan.products.${i}.costing.materials`, label: 'Materials per batch', type: 'money' }), field({ path: `plan.products.${i}.costing.labor`, label: 'Labor per batch', type: 'money', opt: true }),
           field({ path: `plan.products.${i}.costing.overhead`, label: 'Overhead per batch (fuel, electricity, packaging)', type: 'money', opt: true }), field({ path: `plan.products.${i}.costing.units`, label: 'Units produced per batch', inputmode: 'numeric', num: 1 }))}
@@ -516,7 +518,7 @@
       `<div class="calc-panel" data-calc="planMonthly"></div>`;
   }
   function s6() {
-    return `<p class="help">GROW projects your sales and cash for the next 12 months using only the numbers you entered. Change the assumptions below.${speakBtn('GROW projects your sales and cash for the next 12 months using only the numbers you entered.')}</p>` +
+    return `<p class="help">The app projects your sales and cash for the next 12 months using only the numbers you entered. Change the assumptions below.${speakBtn('The app projects your sales and cash for the next 12 months using only the numbers you entered.')}</p>` +
       row(field({ path: 'plan.beginningCash', label: 'Cash you have now (beginning cash)', type: 'money', req: true, help: 'Enter 0 if none.' }),
         field({ path: 'plan.growthPct', label: 'Expected sales growth per month', suf: '%', inputmode: 'decimal', opt: true, help: 'Leave blank or 0 if you expect the same sales every month.' }),
         field({ path: 'plan.drawings', label: "Owner's monthly drawings (household use)", type: 'money', opt: true })) +
@@ -615,7 +617,13 @@
   }
 
   /* ---------------------------------------------------------------- LOAN */
-  function vLoan() {
+  function vLoan(sub) {
+    if (!sub) sub = G.GrowLoans && G.GrowLoans.hasLoans() ? 'account' : 'apply';
+    const tabsHtml = `<div class="tabs loan-tabs" role="tablist"><a role="tab" href="#loan/account" class="${sub === 'account' ? 'on' : ''}">${ic('loan')} My Loan</a><a role="tab" href="#loan/apply" class="${sub === 'apply' ? 'on' : ''}">${ic('send')} Apply for EMBRACE</a></div>`;
+    if (sub === 'account') return `<div class="page-head"><div><h1>${t('EMBRACE Loan')}</h1><p class="muted">Loan status, payments and due dates</p></div></div>` + tabsHtml + (G.GrowLoans ? G.GrowLoans.view() : '');
+    return tabsHtml + vLoanApply();
+  }
+  function vLoanApply() {
     const p = S.profile, l = p.loan, ofw = l.applicantType === 'ofw';
     const yn = [['yes', 'Yes'], ['no', 'No'], ['', 'Not sure']];
     const el = C.eligibility(p);
@@ -687,18 +695,21 @@
         <label class="toggle"><input type="checkbox" data-setting="contrast" ${s.contrast ? 'checked' : ''}> ${t('High contrast')}</label>
       </div>
       <div class="form-card"><h2>${ic('cloud')} Online account &amp; sync</h2>
-        ${!API.configured() ? `<p class="muted">The online server is not configured for this copy of GROW. Your data stays on this device. (Administrators: set API_URL in js/config.js.)</p>` :
-        linked ? `<p>Linked to GROW Passport <b>${esc(S.session.passportId)}</b>. ${S.session.lastSync ? 'Last sync: ' + new Date(S.session.lastSync).toLocaleString() : ''}</p>
+        ${!API.configured() ? `<p class="muted">The online server is not configured for this copy of the EMBRACE Portal. Your data stays on this device. (Administrators: set API_URL in js/config.js.)</p>` :
+        linked ? `<p>Linked to EMBRACE Passport <b>${esc(S.session.passportId)}</b>. ${S.session.lastSync ? 'Last sync: ' + new Date(S.session.lastSync).toLocaleString() : ''}</p>
           <div class="btns"><button class="btn" data-act="syncNow">${ic('cloud')} ${t('Sync now')}</button><button class="btn ghost" data-act="signOut">${t('Sign out')}</button></div>
           <p class="muted small">Your data is saved on this device first and sent to the OLEDIPO server automatically when you have internet.</p>` :
         `<p>Link an online account to back up your Passport, use it on another device, and submit your application online.</p>
           <div class="btns"><button class="btn" data-act="register">${t('Create account')}</button><button class="btn ghost" data-act="signIn">${t('Sign in')}</button></div>`}
       </div>
       ${G.GrowInstall && G.GrowInstall.available() ? `<div class="form-card"><h2>${ic('down')} Install the app</h2><div id="setInstall"></div></div>` : ''}
-      <div class="form-card"><h2>${ic('lock')} Security</h2><p class="muted">${Store.cryptoAvailable ? 'Your data on this device is encrypted with your PIN (AES-256).' : 'This browser does not support encryption — use the HTTPS address of GROW for encrypted storage.'}</p>
+      <div class="form-card"><h2>${ic('bulb')} AI assistance</h2><p class="muted">AI (OpenAI) checks your uploaded documents for completeness. Results are suggestions only; OLEDIPO staff do the official checks.</p>
+        <p>Status: <b>${S.profile.consent && S.profile.consent.ai ? 'Allowed since ' + C.fmtDate(S.profile.consent.aiAt) : 'Not allowed'}</b></p>
+        <div class="btns">${S.profile.consent && S.profile.consent.ai ? `<button class="btn ghost" data-act="aiConsentOff">Withdraw AI consent</button>` : `<button class="btn ghost" data-act="aiConsentOn">Allow AI assistance</button>`}</div></div>
+      <div class="form-card"><h2>${ic('lock')} Security</h2><p class="muted">${Store.cryptoAvailable ? 'Your data on this device is encrypted with your PIN (AES-256).' : 'This browser does not support encryption — use the HTTPS address of the EMBRACE Portal for encrypted storage.'}</p>
         <div class="btns"><button class="btn ghost" data-act="changePin">Change PIN</button><button class="btn ghost" data-act="lockNow">${ic('lock')} Lock now</button><button class="btn ghost danger" data-act="wipe">${ic('trash')} Erase all data on this device</button></div></div>
-      <div class="form-card"><h2>About GROW</h2><p><b>GROW — Growing Revenue through OLEDIPO's Workspace</b> v${esc(G.GROW_CONFIG.VERSION)}. Developed for the ${esc(G.GROW_CONFIG.OFFICE)}, ${esc(G.GROW_CONFIG.LGU)}, in response to the 2026 Iloilo Startup Hackathon challenge “NegosyoPlan”.</p>
-        <p class="muted small">Financial computations use only the information you provide. Missing information is flagged, not invented. Professional review of financial statements is recommended. GROW does not guarantee loan approval.</p>
+      <div class="form-card"><h2>About the EMBRACE Portal</h2><p><b>EMBRACE Portal — Expanded Micro Business Recovery Assistance during Crisis and Emergency</b> v${esc(G.GROW_CONFIG.VERSION)}. Developed for the ${esc(G.GROW_CONFIG.OFFICE)}, ${esc(G.GROW_CONFIG.LGU)}, in response to the 2026 Iloilo Startup Hackathon challenge “NegosyoPlan”.</p>
+        <p class="muted small">Financial computations use only the information you provide. Missing information is flagged, not invented. Professional review of financial statements is recommended. The EMBRACE Portal does not guarantee loan approval.</p>
         <p><a href="#admin">${ic('users')} ${t('OLEDIPO Staff')}</a></p></div>`;
   }
 
@@ -906,6 +917,7 @@
       case 'fsCsv': downloadFsCsv(); break;
       case 'doc': openDoc(b.dataset.doc, p); break;
       case 'docWord': {
+        if (b.dataset.doc === '__obj' && S._docObj) { download(D.wordBlob(S._docObj.doc), S._docObj.base + '.doc'); break; }
         const prof = (b.closest('#docView') && S._docProfile) || p;
         const d = D.LIST.find((x) => x.id === b.dataset.doc); const doc = d.fn(prof); download(D.wordBlob(doc), fileName(doc.title, prof) + '.doc'); break;
       }
@@ -921,7 +933,7 @@
         if (d && d.driveId && S.session) API.call({ action: 'deleteFile', token: S.session.token, driveId: d.driveId }).catch(() => {});
         touch(); route(); break;
       }
-      case 'loadSample': if (confirm('Load a fictional sample business to try GROW? You can erase it later in Settings.')) { S.profile = C.normalize(sampleProfile()); touch(); route(); } break;
+      case 'loadSample': if (confirm('Load a fictional sample business to try the EMBRACE Portal? You can erase it later in Settings.')) { S.profile = C.normalize(sampleProfile()); touch(); route(); } break;
       case 'backup': backup(); break;
       case 'submit': submitApp(); break;
       case 'syncNow': sync({ toast: true }); break;
@@ -939,8 +951,8 @@
       case 'changePin': pinChangeDialog(); break;
       case 'doChangePin': doChangePin(); break;
       case 'lockNow': Store.lock(); lockScreen(); break;
-      case 'wipe': if (confirm('Erase ALL GROW data on this device? Download a backup first if you need it.') && confirm('Are you sure? This cannot be undone.')) { await Store.wipe(); location.hash = ''; location.reload(); } break;
-      default: if (G.GrowAdmin && G.GrowAdmin.onClick) G.GrowAdmin.onClick(a, b, e);
+      case 'wipe': if (confirm('Erase ALL EMBRACE Portal data on this device? Download a backup first if you need it.') && confirm('Are you sure? This cannot be undone.')) { await Store.wipe(); location.hash = ''; location.reload(); } break;
+      default: if (G.GrowLoans && /^ln[A-Z]/.test(a)) { G.GrowLoans.onClick(a, b); return; } if (G.GrowAI && G.GrowAI.onClick(a, b)) return; if (G.GrowAdmin && G.GrowAdmin.onClick) G.GrowAdmin.onClick(a, b, e);
     }
   }
 
@@ -960,6 +972,7 @@
       S.profile.documents.push({ id, category: cat, name, mime, size, addedAt: new Date().toISOString(), driveId: '' });
       if (el.dataset.link) setPath(S.profile, el.dataset.link, id);
       touch(); route(); toast('Saved: ' + cat, 'ok');
+      if (G.GrowAI) G.GrowAI.afterUpload(id);
     } catch (err) { toast('Could not read file: ' + err.message, 'err'); }
   }
   function readAsDataURL(f) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsDataURL(f); }); }
@@ -982,7 +995,12 @@
   /* ================================================================ documents */
   function openDoc(id, profile) {
     const d = D.LIST.find((x) => x.id === id); if (!d) return;
-    const doc = d.fn(profile || S.profile);
+    showDoc(d.fn(profile || S.profile), id);
+    S._docProfile = profile || S.profile;
+  }
+  /* open any generated document object {title, html} (e.g. Statement of Account) */
+  function openDocObj(doc, base) { S._docObj = { doc, base }; showDoc(doc, '__obj'); }
+  function showDoc(doc, id) {
     const old = $('#docView'); if (old) old.remove();
     const v = document.createElement('div'); v.id = 'docView'; v.className = 'docview';
     v.innerHTML = `<div class="doc-bar"><button class="btn ghost" data-act="closeDoc">${ic('arrowL')} ${t('Back')}</button><b>${esc(doc.title)}</b>
@@ -991,9 +1009,8 @@
     document.body.appendChild(v);
     const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(doc.title)}</title><style>@page{size:auto;margin:14mm}body{max-width:820px;margin:0 auto;padding:18px;background:#fff}${D.PRINT_CSS}@media print{body{padding:0}}</style></head><body>${doc.html}</body></html>`;
     const fr = $('#docFrame'); fr.srcdoc = html;
-    S._docProfile = profile || S.profile;
   }
-  function fileName(s, prof) { prof = prof || S.profile; const nm = (prof.business.name || prof.owner.lastName || 'GROW').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '_'); return s.replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '_') + '_' + nm; }
+  function fileName(s, prof) { prof = prof || S.profile; const nm = (prof.business.name || prof.owner.lastName || 'EMBRACE').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '_'); return s.replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '_') + '_' + nm; }
   function download(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000); }
   function downloadFsCsv() {
     const p = S.profile, rows = C.fsCalc(p), q = (s) => '"' + String(s).replace(/"/g, '""') + '"';
@@ -1010,15 +1027,15 @@
   async function backup() {
     const files = {};
     for (const d of S.profile.documents) { const f = await Store.getFile(d.id); if (f) files[d.id] = f; }
-    const data = { app: 'GROW', version: G.GROW_CONFIG.VERSION, exportedAt: new Date().toISOString(), profile: S.profile, files };
-    download(new Blob([JSON.stringify(data)], { type: 'application/json' }), fileName('GROW_backup') + '_' + new Date().toISOString().slice(0, 10) + '.json');
+    const data = { app: 'EMBRACE', version: G.GROW_CONFIG.VERSION, exportedAt: new Date().toISOString(), profile: S.profile, files };
+    download(new Blob([JSON.stringify(data)], { type: 'application/json' }), fileName('EMBRACE_backup') + '_' + new Date().toISOString().slice(0, 10) + '.json');
     toast('Backup downloaded. Keep it in a safe place — it contains your personal information.', 'ok');
   }
   async function restore(file) {
     if (!file) return;
     try {
       const data = JSON.parse(await file.text());
-      if (data.app !== 'GROW' || !data.profile) throw new Error('Not a GROW backup file.');
+      if (['GROW', 'EMBRACE'].indexOf(data.app) < 0 || !data.profile) throw new Error('Not an EMBRACE Portal backup file.');
       if (!confirm('Replace the data on this device with the backup from ' + new Date(data.exportedAt).toLocaleString() + '?')) return;
       S.profile = C.normalize(data.profile);
       for (const id of Object.keys(data.files || {})) await Store.putFile(id, data.files[id]);
@@ -1030,7 +1047,7 @@
   function accountDialog(mode) {
     if (!S.online && !API.isGas()) return toast('You need internet for this.', 'err');
     if (mode === 'register') {
-      modal(`<h2>${t('Create account')}</h2><p class="muted">Your online GROW Passport lets you back up, use another device and submit to OLEDIPO.</p>
+      modal(`<h2>${t('Create account')}</h2><p class="muted">Your online EMBRACE Passport lets you back up, use another device and submit to OLEDIPO.</p>
         <div class="fld"><label for="acMobile">${t('Mobile number')}</label><input id="acMobile" type="tel" inputmode="tel" value="${esc(S.profile.owner.contact || '')}" placeholder="09XXXXXXXXX"></div>
         <div class="fld"><label for="acPin">Online PIN (4–8 digits)</label><input id="acPin" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"></div>
         <div class="fld"><label for="acPin2">Repeat PIN</label><input id="acPin2" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"></div>
@@ -1049,7 +1066,7 @@
       const r = await API.call({ action: 'register', mobile: m, pin: p1 });
       S.session = { token: r.token, passportId: r.passportId }; S.profile.passportId = r.passportId; S.profile.meta.serverUpdatedAt = '';
       await Store.setSecure('session', S.session); closeModal(); touch(); await persist(); await sync({ toast: true }); route();
-      modal(`<h2>${ic('check')} Account created</h2><p>Your GROW Passport ID is</p><p class="big-id">${esc(r.passportId)}</p><p>Write it down. You can sign in with this ID or your mobile number.</p>`);
+      modal(`<h2>${ic('check')} Account created</h2><p>Your EMBRACE Passport ID is</p><p class="big-id">${esc(r.passportId)}</p><p>Write it down. You can sign in with this ID or your mobile number.</p>`);
     } catch (e) { $('#acErr').textContent = e.message; }
   }
   async function doSignIn() {
@@ -1107,7 +1124,7 @@
 
   /* ================================================================ lock / welcome */
   function lockScreen() {
-    document.body.innerHTML = `<header class="top gate-top"><span class="brand">${LOGO()}<span><b>EMBRACE Portal</b><small>GROW — Growing Revenue through OLEDIPO's Workspace</small></span></span></header><div class="gate"><div class="gate-card"><h1>GROW</h1><p class="muted">Growing Revenue through OLEDIPO's Workspace</p>
+    document.body.innerHTML = `<header class="top gate-top"><span class="brand">${LOGO()}<span><b>EMBRACE Portal</b><small>Expanded Micro Business Recovery Assistance during Crisis and Emergency</small></span></span></header><div class="gate"><div class="gate-card"><h1>EMBRACE Portal</h1><p class="muted">Expanded Micro Business Recovery Assistance during Crisis and Emergency</p>
       <form id="unlockForm"><label for="pin">${t('Enter your PIN')}</label><input id="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="current-password" class="pin-in" required>
       <button class="btn big full" type="submit">${ic('lock')} ${t('Unlock')}</button><p id="pinErr" class="err" role="alert"></p></form>
       <details class="small"><summary>${t('Forgot PIN?')}</summary><p>For your security, your data on this device can only be opened with your PIN. If you have an online account, you can erase this device and sign in again to restore your Passport.</p>
@@ -1118,11 +1135,11 @@
       e.preventDefault();
       try { await Store.unlock($('#pin').value); await start(); } catch (err) { $('#pinErr').textContent = 'Wrong PIN. Please try again.'; $('#pin').value = ''; $('#pin').focus(); }
     };
-    $('#forgotWipe').onclick = async () => { if (confirm('Erase all GROW data on this device?')) { await Store.wipe(); location.reload(); } };
+    $('#forgotWipe').onclick = async () => { if (confirm('Erase all EMBRACE Portal data on this device?')) { await Store.wipe(); location.reload(); } };
     $('#staffLink').onclick = () => { setTimeout(route, 0); };
   }
   function welcome() {
-    document.body.innerHTML = `<header class="top gate-top"><span class="brand">${LOGO()}<span><b>EMBRACE Portal</b><small>GROW — Growing Revenue through OLEDIPO's Workspace</small></span></span></header><div class="gate"><div class="gate-card wide"><h1>GROW</h1><p class="lead">Growing Revenue through OLEDIPO's Workspace</p>
+    document.body.innerHTML = `<header class="top gate-top"><span class="brand">${LOGO()}<span><b>EMBRACE Portal</b><small>Expanded Micro Business Recovery Assistance during Crisis and Emergency</small></span></span></header><div class="gate"><div class="gate-card wide"><h1>EMBRACE Portal</h1><p class="lead">Expanded Micro Business Recovery Assistance during Crisis and Emergency</p>
       <p>Your guide to preparing a <b>business plan</b>, <b>financial statements</b> and <b>EMBRACE loan requirements</b> — on your phone or computer, even without internet.</p>
       <h2>${t('Choose your language')}</h2><div class="chips center">${Object.entries(I.LANGS).map(([k, v]) => `<label class="chip big"><input type="radio" name="wl" value="${k}" ${S.settings.lang === k ? 'checked' : ''}><span>${v}</span></label>`).join('')}</div>
       <form id="pinForm"><h2>${t('Create a PIN')}</h2><p class="muted small">4 to 8 numbers. It protects your information on this device. Do not share it.</p>
@@ -1213,6 +1230,7 @@
     applySettings();
     if (!location.hash || location.hash === '#') location.hash = '#home'; else route();
     if (S.session) sync();
+    if (G.GrowLoans) G.GrowLoans.load(false).then(() => { if (/^#(home)?$/.test(location.hash || '#home') && G.GrowLoans.hasLoans()) route(); });
   }
   let bound = false;
   function bindOnce() {
@@ -1256,13 +1274,13 @@
     if (!G.GrowAdmin) return;
     if (S.shellMode !== 'admin' || !$('#main')) {
       S.shellMode = 'admin';
-      document.body.innerHTML = `<header class="top"><a class="brand" href="#home">${LOGO()}<span><b>GROW</b><small>OLEDIPO Staff Workspace</small></span></a>
+      document.body.innerHTML = `<header class="top"><a class="brand" href="#home">${LOGO()}<span><b>EMBRACE Portal</b><small>Expanded Micro Business Recovery Assistance during Crisis and Emergency · OLEDIPO Staff</small></span></a>
         <div class="top-r"><a class="btn sm ghost" href="#home">${ic('arrowL')} Applicant app</a></div></header><main id="main" class="admin-main" tabindex="-1"></main><div id="toasts" aria-live="polite"></div>`;
     }
     G.GrowAdmin.render();
   }
 
 
-  G.GrowApp = { S, ic, esc, toast, modal, closeModal, openDoc, download, field, refreshCalcs, renderAdmin, getPath };
+  G.GrowApp = { S, ic, esc, toast, modal, closeModal, openDoc, openDocObj, download, field, refreshCalcs, renderAdmin, getPath, touch, persist, route, sync };
   document.addEventListener('DOMContentLoaded', boot);
 })(window);

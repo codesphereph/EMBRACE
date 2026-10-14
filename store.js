@@ -1,4 +1,4 @@
-/* GROW — local storage (IndexedDB, AES-GCM encrypted with the user's PIN) + server API + sync */
+/* EMBRACE Portal — local storage (IndexedDB, AES-GCM encrypted with the user's PIN) + server API + sync */
 (function (G) {
   'use strict';
 

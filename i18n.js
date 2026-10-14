@@ -1,4 +1,4 @@
-/* GROW — translations. English text is the key; [Filipino, Hiligaynon].
+/* EMBRACE Portal — translations. English text is the key; [Filipino, Hiligaynon].
    Missing entries fall back to English. OLEDIPO staff may refine wording here. */
 (function (G) {
   var D = {
@@ -157,7 +157,7 @@
     'This app does not guarantee loan approval.': ['Hindi ginagarantiya ng app na ito ang pag-apruba ng pautang.', 'Indi ginagarantiya sang app ini ang pag-aprobar sang utang.'],
 
     // home
-    'Welcome to GROW': ['Maligayang pagdating sa GROW', 'Malipayon nga pag-abot sa GROW'],
+    'Welcome to EMBRACE Portal': ['Maligayang pagdating sa EMBRACE Portal', 'Malipayon nga pag-abot sa EMBRACE Portal'],
     'Your progress': ['Ang iyong progreso', 'Ang imo progreso'],
     'Quick actions': ['Mabilisang aksyon', 'Madasig nga aksyon'],
     'Works even without internet': ['Gumagana kahit walang internet', 'Nagagana bisan wala internet'],

@@ -1,4 +1,4 @@
-/* GROW — splash (logo) → EMBRACE Portal poster landing → install banner. Same flow as SMILE.
+/* EMBRACE Portal — splash (logo) → EMBRACE Portal poster landing → install banner. Same flow as SMILE.
    Images are plain files: assets/hero.jpg (poster), assets/hero-sm.jpg, assets/hero-blur.jpg, assets/logo-circle.png. */
 (function (G) {
   'use strict';
@@ -45,7 +45,7 @@
           <button class="btn-enter" id="enterBtn"><span>Enter the Portal</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
           <p class="lp-text">Prepare your <b>business plan</b>, <b>financial statements</b> and <b>EMBRACE loan requirements</b> step by step — even without internet.</p>
           <div class="land-feats"><span>✓ Libre / Free</span><span>✓ Works offline</span><span>✓ English · Filipino · Hiligaynon</span></div>
-          <p class="grow-by">Powered by <b>GROW</b> — Growing Revenue through OLEDIPO's Workspace<br>
+          <p class="grow-by">Office of the Local Economic Development and Investment Promotion Officer · Iloilo Province<br>
             <button type="button" class="link-btn" id="installLink" hidden>Install app</button> <a href="#admin" id="staffBtn">OLEDIPO Staff</a></p>
         </div>
       </div>
