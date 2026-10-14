@@ -1,0 +1,29 @@
+{
+  "id": "./",
+  "name": "EMBRACE Portal · GROW — Growing Revenue through OLEDIPO's Workspace",
+  "short_name": "EMBRACE",
+  "description": "Prepare your business plan, financial statements and EMBRACE loan requirements step by step. MSME Enterprise Passport for Iloilo micro-entrepreneurs and OFWs. Works offline.",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#E8F2FF",
+  "theme_color": "#123A8C",
+  "lang": "en-PH",
+  "categories": ["business", "finance", "productivity"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "assets/hero.jpg", "sizes": "1024x1536", "type": "image/jpeg", "form_factor": "narrow", "label": "EMBRACE Portal landing page" }
+  ],
+  "shortcuts": [
+    { "name": "Business Plan", "url": "./#plan/1", "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }] },
+    { "name": "Financial Statements", "url": "./#finance", "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }] },
+    { "name": "EMBRACE Loan", "url": "./#loan", "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }] },
+    { "name": "Documents", "url": "./#docs", "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }] }
+  ]
+}
